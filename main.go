@@ -66,22 +66,6 @@ func (rect *Rect) MergeRect(rect2 Rect) bool {
 	return false
 }
 
-// MergeRect 判断两个Rect是否可以合并
-func MergeRect(rect1, rect2 Rect) *Rect {
-	//判断是否有一条边事完全重合的
-	if rect1.min.y == rect2.min.y && rect1.max.x == rect2.min.x && rect1.max.y == rect2.max.y {
-		return &Rect{rect1.min, rect2.max}
-	} else if rect2.min.y == rect1.min.y && rect2.max.x == rect1.min.x && rect2.max.y == rect1.max.y {
-		return &Rect{rect2.min, rect1.max}
-	} else if rect1.max.y == rect2.min.y && rect1.min.x == rect2.min.x && rect1.max.x == rect2.max.x {
-		return &Rect{rect1.min, rect2.max}
-	} else if rect2.max.y == rect1.min.y && rect2.min.x == rect1.min.x && rect2.max.x == rect1.max.x {
-		return &Rect{rect2.min, rect1.max}
-	}
-
-	return nil
-}
-
 const MAXLAYER = 1
 
 // RectNode 默认左上角角是0，0坐标点。如果项目组不是的话，那么拿到坐标以后再进行转换就好了。
@@ -259,6 +243,11 @@ func (rectNode *RectNode) InsertRect(inRect Rect) bool {
 			return false
 		}
 
+		//首先进行查看插入的rect是否在当前区域内，如果不在的话，直接返回去false
+		if !innerFunc(rectNode.leftTop, rectNode.rightButtom) {
+			return false
+		}
+
 		if innerFunc(rectNode.leftTopChild.leftTop, rectNode.leftTopChild.rightButtom) {
 			return rectNode.leftTopChild.InsertRect(inRect)
 		} else if innerFunc(rectNode.rightTopChild.leftTop, rectNode.rightTopChild.rightButtom) {
@@ -376,6 +365,11 @@ func (rectNode *RectNode) FreeRect(inRect Rect) bool {
 			if rect.IsRectInRect(inRect) {
 				return true
 			}
+			return false
+		}
+
+		//首先进行查看插入的rect是否在当前区域内，如果不在的话，直接返回去false
+		if !innerFunc(rectNode.leftTop, rectNode.rightButtom) {
 			return false
 		}
 
@@ -537,18 +531,6 @@ func (rectNode *RectNode) Get(length, width int) *Rect {
 	return nil
 }
 
-// 冒泡算法
-func BubbleSort(nums []int) {
-	length := len(nums)
-	for i := 0; i < length; i++ {
-		for j := 0; j < length-i-1; j++ {
-			if nums[j] > nums[j+1] {
-				nums[j], nums[j+1] = nums[j+1], nums[j]
-			}
-		}
-	}
-}
-
 //var lockPool = sync.Pool{
 //	New: func() interface{} {
 //		locks := make([]int, 0, 5)
@@ -604,9 +586,9 @@ func main() {
 	//nums = append(nums[:index], nums[index+1:]...)
 	//
 	//fmt.Println(nums)
-	//var nums Nums
-	//nums.Add(1)
-	//println(nums.num)
+	var nums Nums
+	nums.Add(1)
+	println(nums.num)
 
 	//r1 := Rect{Point{0, 0}, Point{10, 10}}
 	//r2 := Rect{Point{10, 0}, Point{15, 15}}
@@ -615,10 +597,10 @@ func main() {
 	//println(result.Empty())
 	//fmt.Printf("%v", result)
 
-	var root RectNode
-	root.root = true
-	root.Init(100, 100)
-	root.Get(10, 10)
+	//var root RectNode
+	//root.root = true
+	//root.Init(100, 100)
+	//root.Get(10, 10)
 
 	//flag := root.InsertRect(Rect{Point{40, 40}, Point{60, 60}})
 	//println(flag)
@@ -640,8 +622,8 @@ func main() {
 	//flag = root.InsertRect(Rect{Point{20, 60}, Point{40, 80}})
 	//println(flag)
 
-	rand.Seed(time.Now().UnixNano())
-
-	randomFlag := rand.Intn(4)
-	println(randomFlag)
+	//rand.Seed(time.Now().UnixNano())
+	//
+	//randomFlag := rand.Intn(4)
+	//println(randomFlag)
 }
